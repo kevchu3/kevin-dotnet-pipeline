@@ -34,7 +34,6 @@ stages:
         sourceImageTag: $(Build.BuildId)
         repositoryName: '$(project-name-dev)/$(image-name)'
         pushTag: 'latest'
-        outputVariable: 'ecr-image'
         autoCreateRepository: true
     - task: ECRPushImage@1
       name: ECRPushImageTag
@@ -54,16 +53,23 @@ stages:
         targetPath: '$(Build.SourcesDirectory)/manifests'
         artifact: 'manifests'
         publishLocation: 'pipeline'
+    - task: PowerShell@2
+      displayName: Save variables for future stages
+      name: SaveVars
+      inputs:
+        targetType: 'inline'
+        script: |
+          echo "##vso[task.setvariable variable=ecr-image;isOutput=true]$(ecr-image)"
 
 - stage: Deploy
   displayName: Deploy to DEV
   dependsOn: Build
   condition: succeeded()
+  variables:
+    ecr-image: $[ stageDependencies.Build.BuildAndPushJob.outputs['SaveVars.ecr-image'] ]
   jobs:
   - job: DeployDevJob
     displayName: Deploy to DEV Job
-    variables:
-      ecr-image: $[ stageDependencies.Build.BuildAndPushJob.outputs['ECRPushImage.ecr-image'] ]
     steps:
     - task: KubernetesManifest@0
       displayName: Deploy to Kubernetes cluster
@@ -73,4 +79,4 @@ stages:
         namespace: '$(project-name-dev)'
         manifests: |
           $(Build.SourcesDirectory)/manifests/kevin-dotnet.deployment.yaml
-        containers: '015719942846.dkr.ecr.us-east-1.amazonaws.com/my-dev/kevin-dotnet:latest'
+        containers: '$(ecr-image)'
