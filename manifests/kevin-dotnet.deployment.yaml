@@ -14,7 +14,6 @@ spec:
     spec:
       containers:
         - name: kevin-dotnet
-          image: 015719942846.dkr.ecr.us-east-1.amazonaws.com/my-dev/kevin-dotnet:latest
           ports:
             - containerPort: 8080
 
