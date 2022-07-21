@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kevin-dotnet
-          image: 015719942846.dkr.ecr.us-east-1.amazonaws.com/my-dev/kevin-dotnet
+          image: image-registry.openshift-image-registry.svc:5000/my-dev/kevin-dotnet
           ports:
             - containerPort: 8080
 
