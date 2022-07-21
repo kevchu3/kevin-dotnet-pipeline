@@ -21,6 +21,7 @@ stages:
       inputs:
 #        buildArguments: FEED_ACCESSTOKEN=$(FEED_ACCESSTOKEN)
         command: 'build'
+        containerRegistry: 'kechung ROSA internal registry'
         buildContext: 'App'
         repository: '$(project-name-dev)/$(image-name)'
         Dockerfile: 'Dockerfile'
